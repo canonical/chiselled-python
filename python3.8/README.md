@@ -7,10 +7,11 @@ We currently have Chiselled Python3.8 only on focal. See [Dockerfile.20.04](./Do
 
 ### Building the image(s)
 
-Build the dockerfile(s) in the usual way:
+Build the Dockerfile(s) in the usual way:
 
 ```sh
-$ docker build -t ubuntu/chiselled-python:3.8 -f python3.8/Dockerfile.20.04 python3.8
+$ # NOTE: export DOCKER_BUILDKIT=1 if you're running on an older Docker version
+$ docker build -t ubuntu/chiselled-python:3.8 --load -f python3.8/Dockerfile.20.04 python3.8
 ```
 
 ### Run the image(s)
