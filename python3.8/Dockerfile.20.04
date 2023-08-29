@@ -1,49 +1,19 @@
 ARG UBUNTU_RELEASE=20.04
 ARG USER=ubuntu UID=101 GROUP=ubuntu GID=101
 
-FROM golang:1.20 AS chisel
-ARG UBUNTU_RELEASE
-RUN git clone -b ubuntu-${UBUNTU_RELEASE} https://github.com/canonical/chisel-releases /opt/chisel-releases \
-    && mkdir -p /opt/chisel
-WORKDIR /opt/chisel
-RUN case "$(dpkg --print-architecture)" in                          \
-        armhf)                                                      \
-            arch="arm"                                              \
-            ;;                                                      \
-        ppc64el)                                                    \
-            arch="ppc64le"                                          \
-            ;;                                                      \
-        *)                                                          \
-            arch="$(dpkg --print-architecture)"                     \
-            ;;                                                      \
-    esac                                                            \
-    && wget "https://github.com/canonical/chisel/releases/download/v0.8/chisel_v0.8_linux_$arch.tar.gz" -O chisel.tar.gz \
-    && tar -xvf chisel.tar.gz \
-    && rm -f chisel.tar.gz
-
 FROM ubuntu:$UBUNTU_RELEASE AS builder
+ARG USER UID GROUP GID TARGETARCH
 SHELL ["/bin/bash", "-oeux", "pipefail", "-c"]
+ADD https://github.com/canonical/chisel/releases/download/v0.8/chisel_v0.8_linux_${TARGETARCH}.tar.gz chisel.tar.gz
+RUN tar -xvf chisel.tar.gz -C /usr/bin/
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y ca-certificates \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
-COPY --from=chisel /opt/chisel/chisel /usr/bin/
-
-FROM builder AS rootfs-prep
-ARG USER UID GROUP GID
 RUN mkdir -p /rootfs/etc \
     && echo "$GROUP:x:$GID:" >/rootfs/etc/group \
     && echo "$USER:x:$UID:$GID::/nohome:/noshell" >/rootfs/etc/passwd
-
-FROM scratch AS image-prep
-ARG UID GID
-USER $UID:$GID
-
-### BOILERPLATE END ###
-
-FROM rootfs-prep AS sliced-deps
-COPY --from=chisel /opt/chisel-releases /opt/chisel-releases
-RUN chisel cut --release /opt/chisel-releases --root /rootfs \
+RUN chisel cut --root /rootfs \
     base-files_base \
     base-files_release-info \
     libgcc-s1_libs \
@@ -52,12 +22,14 @@ RUN chisel cut --release /opt/chisel-releases --root /rootfs \
     ncurses-base_xterm \
     python3.8_standard
 
-FROM image-prep
-COPY --from=sliced-deps /rootfs /
+FROM scratch
+ARG UID GID
+USER $UID:$GID
+COPY --from=builder /rootfs /
 # The ca-certificates_data slice seems inadequate for the python3.8 image.
 # TODO: figure out what is missing and/or how to make the current slice work
 #   and remove the next two lines afterwards.
-COPY --from=rootfs-prep /etc/ssl/ /etc/ssl/
-COPY --from=rootfs-prep /usr/share/ca-certificates/mozilla/ /usr/share/ca-certificates/mozilla/
+COPY --from=builder /etc/ssl/ /etc/ssl/
+COPY --from=builder /usr/share/ca-certificates/mozilla/ /usr/share/ca-certificates/mozilla/
 
 ENTRYPOINT [ "python3.8" ]
