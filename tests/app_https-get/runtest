@@ -1,0 +1,10 @@
+#!/bin/bash
+set -ex
+
+echo "Running test for HTTPS-GET app..."
+
+test() {
+	docker run --rm -v "$PWD/src":/src:ro "$1" /src/main.py
+}
+
+test "$PYTHON38"

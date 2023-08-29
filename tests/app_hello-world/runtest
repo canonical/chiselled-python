@@ -1,0 +1,10 @@
+#!/bin/bash
+set -ex
+
+echo "Running test for Hello World app..."
+
+test() {
+	docker run --rm -v "$PWD/src":/src:ro "$1" /src/main.py
+}
+
+test "$PYTHON38"

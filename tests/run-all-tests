@@ -1,0 +1,17 @@
+#!/bin/bash
+set -ex
+
+echo "Running tests..."
+
+export PYTHON38=${1:-"ubuntu/chiselled-python:3.8-test"}
+
+CURRENT_DIR="$(dirname "$(readlink -f "$0")")"
+
+for test_dir in "$CURRENT_DIR"/*/
+do
+    pushd "$test_dir"
+
+    ./runtest
+
+    popd
+done
