@@ -44,7 +44,7 @@ jobs:
           skopeo copy oci-archive:"chiselled-python.${{ matrix.arch }}.tar" docker-daemon:${{ env.python3-8-image }}
           ./tests/run-all-tests ${{ env.python3-8-image }}
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: chiselled-python-oci-tarballs
           path: chiselled-python.*.tar
