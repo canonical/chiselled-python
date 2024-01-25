@@ -1,6 +1,6 @@
 name: python
 version: '3.8'
-summary: Python 3.8
+summary: Chiselled Python 3.8 rock
 description: |
     Python is an interpreted, interactive, object-oriented, open-source
     programming language.
@@ -18,9 +18,9 @@ services:
     python3:
         startup: disabled
         override: replace
-        command: python3
-        on-success: ignore
-        on-failure: ignore
+        command: python3 [ -c 'print("Run the container with \"--args python3 <your-app.py> \\; start python3\"")' ]
+        on-success: shutdown
+        on-failure: shutdown
 
 parts:
     python3:
