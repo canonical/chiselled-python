@@ -1,11 +1,10 @@
 name: python
-version: '3.8'
+version: "3.8"
 summary: Chiselled Python 3.8 rock
 description: |
     Python is an interpreted, interactive, object-oriented, open-source
     programming language.
-license: GPL-3.0
-
+license: Python-2.0
 base: bare
 build-base: ubuntu@20.04
 
@@ -13,14 +12,6 @@ run-user: _daemon_
 
 platforms:
     amd64:
-
-services:
-    python3:
-        startup: disabled
-        override: replace
-        command: python3 [ -c 'print("Run the container with \"--args python3 <your-app.py> \\; start python3\"")' ]
-        on-success: shutdown
-        on-failure: shutdown
 
 parts:
     python3:
