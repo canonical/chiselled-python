@@ -20,6 +20,8 @@ jobs:
         with:
           path: python${{ matrix.version }}/
           verbosity: debug
+          # we need >= v1.2.0 for running the rock properly
+          revision: 1552
 
       - name: Run tests
         env:
