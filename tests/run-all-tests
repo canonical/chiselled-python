@@ -3,7 +3,9 @@ set -ex
 
 echo "Running tests..."
 
-export PYTHON38=${1:-"ubuntu/chiselled-python:3.8-test"}
+export PYTHON_IMAGE="ubuntu/chiselled-python:test"
+
+skopeo copy --insecure-policy oci-archive:"$1" docker-daemon:"$PYTHON_IMAGE"
 
 CURRENT_DIR="$(dirname "$(readlink -f "$0")")"
 
