@@ -22,15 +22,11 @@ jobs:
           verbosity: debug
 
       - name: Run tests
-        env:
-          ROCK_PATH: ${{ steps.build.outputs.rock }}
         run: |
           set -ex
-          ./tests/run-all-tests "$ROCK_PATH"
+          ./tests/run-all-tests "${{ steps.build.outputs.rock }}"
 
       - uses: actions/upload-artifact@v4
-        env:
-          ROCK_PATH: ${{ steps.build.outputs.rock }}
         with:
           name: rock
-          path: ./"$ROCK_PATH"
+          path: ${{ steps.build.outputs.rock }}
