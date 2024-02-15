@@ -4,7 +4,9 @@ set -ex
 echo "Running test for HTTPS-GET app..."
 
 test() {
-	docker run --rm -v "$PWD/src":/src:ro "$1" /src/main.py
+	docker run --rm -v "$PWD/src":/src:ro "$1" \
+		exec -IT python3 /src/main.py | \
+		grep "200 OK"
 }
 
-test "$PYTHON38"
+test "$PYTHON_IMAGE"

@@ -3,7 +3,11 @@ set -ex
 
 echo "Running tests..."
 
-export PYTHON38=${1:-"ubuntu/chiselled-python:3.8-test"}
+ROCK_PATH="$1"
+export PYTHON_IMAGE="ubuntu/chiselled-python:test"
+
+/snap/rockcraft/current/bin/skopeo copy --insecure-policy \
+    oci-archive:"$ROCK_PATH" docker-daemon:"$PYTHON_IMAGE"
 
 CURRENT_DIR="$(dirname "$(readlink -f "$0")")"
 

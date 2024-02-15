@@ -2,106 +2,31 @@ name: Tests
 
 on: [push, pull_request]
 
-env:
-  python3-8-image: ubuntu/chiselled-python:3.8-test
-  ubuntu-release: 20.04
-
 jobs:
   test:
     name: Build and test
     runs-on: ubuntu-latest
-    outputs:
-      test_status: ${{ steps.set-outputs.outputs.status }}
     strategy:
       fail-fast: false
       matrix:
-        arch: ["amd64", "arm", "arm64", "s390x", "ppc64le"]
+        version: ["3.8"]
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build the ${{ env.python3-8-image }} image on ${{ matrix.arch }}
-        run: |
-          docker buildx build \
-            --tag ${{ env.python3-8-image }} \
-            --file python3.8/Dockerfile.${{ env.ubuntu-release }} \
-            --platform linux/${{ matrix.arch }} \
-            --output type=oci,dest="chiselled-python.${{ matrix.arch }}.tar" \
-            python3.8
+      - name: Build python${{ matrix.version}} rock
+        id: build
+        uses: canonical/craft-actions/rockcraft-pack@main
+        with:
+          path: python${{ matrix.version }}/
+          verbosity: debug
 
       - name: Run tests
-        if: ${{ matrix.arch == 'amd64' }}
         run: |
           set -ex
-          sudo apt-get update
-          sudo apt-get install -y skopeo
-          skopeo copy oci-archive:"chiselled-python.${{ matrix.arch }}.tar" docker-daemon:${{ env.python3-8-image }}
-          ./tests/run-all-tests ${{ env.python3-8-image }}
+          ./tests/run-all-tests "${{ steps.build.outputs.rock }}"
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
-          name: chiselled-python-oci-tarballs
-          path: chiselled-python.*.tar
-
-      - id: set-outputs
-        if: always()
-        run: |
-          echo "status=${{ job.status }}" >> $GITHUB_OUTPUT
-
-  notify:
-    needs:
-      - test
-    if: always()
-    name: Post workflow status to Mattermost
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Create the message
-        run: |
-          set -eu
-
-          case "${{ needs.test.outputs.test_status }}" in
-            failure) msg_icon=":x:" ;;
-            success) msg_icon=":white_check_mark:" ;;
-            cancelled) msg_icon=":no_entry_sign:" ;;
-            *) msg_icon=":grey_question:" ;;
-          esac
-
-          msg=$(cat << EOF
-          ##### $msg_icon GitHub Workflow '${{ github.workflow	}}' execution [#${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) has ended with the status \`${{ needs.test.outputs.test_status }}\`, for:
-           - Project: [${{ github.repository }}](${{ github.server_url }}/${{ github.repository }})
-           - Branch: [${{ github.ref_name }}](${{ github.server_url }}/${{ github.repository }}/tree/${{ github.ref_name }})
-           - Commit: [${{ github.sha }}](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}); _${{ github.event.head_commit.message }}_
-           - Triggered by: ${{ github.triggering_actor }}
-          EOF
-          )
-
-          jq -n --arg message "$msg" >mattermost.json '
-            {
-              channel_id: "${{ secrets.MM_CHANNEL_ID }}",
-              message: $message,
-            }
-          '
-
-      - name: Send the message to Mattermost
-        run: |
-          set -eu
-
-          log="$(mktemp)"
-          HTTP_CODE="$(curl -i -o "$log" --write-out "%{http_code}" \
-              -X POST -H 'Content-Type: application/json' \
-              -H "Authorization: Bearer ${{ secrets.MM_ACCESS_TOKEN }}" \
-              "${{ secrets.MM_SERVER }}/api/v4/posts" \
-              -d @mattermost.json)"
-
-          if [[ "${HTTP_CODE}" -lt 200 || "${HTTP_CODE}" -gt 299 ]] ; then
-              echo "ERROR: unable to post message into Mattermost channel"
-              cat "$log"
-              exit 22
-          fi
+          name: rock
+          path: ${{ steps.build.outputs.rock }}
