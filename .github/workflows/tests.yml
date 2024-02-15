@@ -23,14 +23,14 @@ jobs:
 
       - name: Run tests
         env:
-          ROCK_NAME: ${{ steps.build.outputs.rock }}
+          ROCK_PATH: ${{ steps.build.outputs.rock }}
         run: |
           set -ex
-          ./tests/run-all-tests "$ROCK_NAME"
+          ./tests/run-all-tests "$ROCK_PATH"
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         env:
-          ROCK_NAME: ${{ steps.build.outputs.rock }}
+          ROCK_PATH: ${{ steps.build.outputs.rock }}
         with:
           name: rock
-          path: "$ROCK_NAME"
+          path: "$ROCK_PATH"
