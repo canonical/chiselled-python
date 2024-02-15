@@ -26,8 +26,6 @@ jobs:
           ROCK_NAME: ${{ steps.build.outputs.rock }}
         run: |
           set -ex
-          sudo apt-get update
-          sudo apt-get install -y skopeo
           ./tests/run-all-tests "$ROCK_NAME"
 
       - uses: actions/upload-artifact@v3
