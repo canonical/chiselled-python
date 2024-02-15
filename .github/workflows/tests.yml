@@ -33,4 +33,4 @@ jobs:
           ROCK_PATH: ${{ steps.build.outputs.rock }}
         with:
           name: rock
-          path: "$ROCK_PATH"
+          path: ./"$ROCK_PATH"
