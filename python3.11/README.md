@@ -48,7 +48,7 @@ hello world
 >>> exit()
 ```
 
-### Building and running an application on Chiselled Python3.8
+### Building and running an application on Chiselled Python3.11
 
 Let's assume, you have the following Python3 source code you want to run
 as an application. Assume the file is called `main.py`.
