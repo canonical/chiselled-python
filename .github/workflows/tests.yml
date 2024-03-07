@@ -9,7 +9,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: ["3.8"]
+        version: ["3.8", "3.11"]
 
     steps:
       - uses: actions/checkout@v4
@@ -28,5 +28,5 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: rock
+          name: python${{ matrix.version }}-rock
           path: ${{ steps.build.outputs.rock }}
