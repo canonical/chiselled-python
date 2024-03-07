@@ -12,9 +12,7 @@ description: |
   and its standard libraries.
 license: Python-2.0
 base: bare
-# devel corresponds to ubuntu@24.04:
-# https://github.com/canonical/rockcraft/pull/458
-build-base: devel
+build-base: ubuntu@22.04
 
 run-user: _daemon_
 

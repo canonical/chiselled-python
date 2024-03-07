@@ -4,7 +4,7 @@ This directory contains the image recipes of Chiselled Python3.11. These
 images are smaller in size, hence less prone to vulnerabilities. Know
 more about chisel [here](https://github.com/canonical/chisel).
 
-We currently have Chiselled Python3.11 only on noble. See
+We currently have Chiselled Python3.11 only on jammy. See
 [rockcraft.yaml](./rockcraft.yaml).
 
 ### Building the image(s)
@@ -41,7 +41,7 @@ You can access the `python3` interpreter with the following command:
 
 ```sh
 $ docker exec -it <container-name> python3
-Python 3.11.8 (main, Feb  7 2024, 21:52:08) [GCC 13.2.0] on linux
+Python 3.11.0rc1 (main, Aug 12 2022, 10:02:14) [GCC 11.2.0] on linux
 Type "help", "copyright", "credits" or "license" for more information.
 >>> print("hello world")
 hello world
