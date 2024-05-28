@@ -23,14 +23,14 @@ Import the recently created rock into Docker using
 ```sh
 $ /snap/rockcraft/current/bin/skopeo copy \
 	oci-archive:python_3.11_amd64.rock \
-	docker-daemon:ubuntu/chiselled-python:3.11
+	docker-daemon:ubuntu/python:3.11
 ```
 
 The image has `pebble enter --verbose` as entrypoint. [Learn about
 pebble](https://github.com/canonical/pebble).
 
 ```sh
-$ docker run ubuntu/chiselled-python:3.11
+$ docker run ubuntu/python:3.11
 2024-02-22T09:16:53.017Z [pebble] Started daemon.
 2024-02-22T09:16:53.020Z [pebble] POST /v1/services 284.402µs 400
 2024-02-22T09:16:53.020Z [pebble] Cannot start default services: no default services
@@ -60,7 +60,7 @@ print("hello world")
 You may create the following Dockerfile for your application image:
 
 ```Dockerfile
-FROM ubuntu/chiselled-python:3.11
+FROM ubuntu/python:3.11
 
 ADD main.py /
 
@@ -86,7 +86,7 @@ Let's assume the previous hello world example file at `./app/main.py`. You may r
 the application with the Chiselled Python image as shown below:
 
 ```sh
-$ docker run -v ./app:/app ubuntu/chiselled-python:3.11 \
+$ docker run -v ./app:/app ubuntu/python:3.11 \
 	exec python3 /app/main.py 2> logs
 hello world
 ```
