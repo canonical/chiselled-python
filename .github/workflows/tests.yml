@@ -9,12 +9,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: ["3.8", "3.11"]
+        version: ["3.8", "3.11", "3.12"]
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build python${{ matrix.version}} rock
+      - name: Build python${{ matrix.version }} rock
         id: build
         uses: canonical/craft-actions/rockcraft-pack@main
         with:
