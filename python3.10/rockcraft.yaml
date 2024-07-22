@@ -28,6 +28,7 @@ parts:
       - libc6_libs
       - libgcc-s1_libs
       - openssl_config
+      - openssl_data
       - python3.10_standard
     override-prime: |
       craftctl default
