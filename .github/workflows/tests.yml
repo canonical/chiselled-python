@@ -5,11 +5,12 @@ on: [push, pull_request]
 jobs:
   test:
     name: Build and test
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
       matrix:
         version: ["3.8", "3.10", "3.11", "3.12"]
+        runner: ["X64", "ARM64"]
 
     steps:
       - uses: actions/checkout@v4
@@ -28,5 +29,5 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: python${{ matrix.version }}-rock
+          name: python${{ matrix.version }}-${{ matrix.runner }}-rock
           path: ${{ steps.build.outputs.rock }}
