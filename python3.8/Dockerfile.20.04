@@ -17,6 +17,7 @@ RUN mkdir -p /rootfs/etc \
 RUN chisel cut --root /rootfs \
     base-files_base \
     base-files_release-info \
+    base-files_chisel \
     libgcc-s1_libs \
     libc6_libs \
     openssl_config \
