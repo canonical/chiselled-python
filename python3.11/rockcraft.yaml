@@ -25,6 +25,7 @@ parts:
     plugin: nil
     stage-packages:
       - base-files_base
+      - base-files_release-info
       - base-files_chisel
       - ca-certificates_data
       - libc6_libs
