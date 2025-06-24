@@ -34,7 +34,4 @@ parts:
           libc6_libs \
           libgcc-s1_libs \
           openssl_config \
-          python3.13_standard
-    override-prime: |
-      craftctl default
-      ln -s /usr/bin/python3.13 $CRAFT_PRIME/usr/bin/python3
+          python3_standard
